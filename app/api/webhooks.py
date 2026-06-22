@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-w_router = APIRouter(prefix="webhooks", tags=['webhook'])
+w_router = APIRouter(prefix="webhooks", tags=['webhooks'])
 
 
 @w_router.post('/')
