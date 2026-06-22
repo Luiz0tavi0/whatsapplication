@@ -17,7 +17,7 @@ class Dispatch(DateMixin):
     )
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger, primary_key=True, autoincrement=True, init=False
     )
     idempotency_key: Mapped[str] = mapped_column(
         String, unique=True, nullable=False
