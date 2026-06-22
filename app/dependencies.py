@@ -1,7 +1,7 @@
-from typing import Annotated, AsyncGenerator
+from typing import Annotated
 
 import httpx
-from fastapi import Depends
+from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_session
@@ -21,9 +21,8 @@ def get_status_service(
 T_StatusService = Annotated[StatusService, Depends(get_status_service)]
 
 
-async def get_http_client() -> AsyncGenerator[httpx.AsyncClient, None]:
-    async with httpx.AsyncClient(timeout=10) as client:
-        yield client
+def get_http_client(request: Request) -> httpx.AsyncClient:
+    return request.app.state.http_client
 
 
 T_HttpClient = Annotated[httpx.AsyncClient, Depends(get_http_client)]

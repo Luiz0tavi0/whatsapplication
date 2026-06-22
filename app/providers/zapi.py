@@ -1,6 +1,6 @@
-import httpx
 
 from app.config import settings
+from app.dependencies import T_HttpClient
 from app.providers.base import WhatsAppProvider
 
 
@@ -9,7 +9,7 @@ class ZApiProvider(WhatsAppProvider):
     supports_lid = True
     base_url = settings.zapi_base_url
 
-    def __init__(self, client: httpx.AsyncClient):
+    def __init__(self, client: T_HttpClient):
         self.client = client
         self.url = (
             f'{self.base_url}instances/{settings.zapi_instance}'

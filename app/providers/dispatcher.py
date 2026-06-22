@@ -1,8 +1,7 @@
 import logging
 
-import httpx
-
 from app.config import settings
+from app.dependencies import T_HttpClient
 from app.providers.base import WhatsAppProvider
 from app.providers.wireweb import WireWebProvider
 from app.providers.zapi import ZApiProvider
@@ -12,7 +11,7 @@ logger = logging.getLogger(__name__)
 PROVIDER_REGISTRY = {'zapi': ZApiProvider, 'wireweb': WireWebProvider}
 
 
-def build_providers(client: httpx.AsyncClient) -> list[WhatsAppProvider]:
+def build_providers(client: T_HttpClient) -> list[WhatsAppProvider]:
     return [
         PROVIDER_REGISTRY[name](client)
         for name in settings.providers_order
