@@ -9,9 +9,10 @@ wheels/
 # Virtual environments
 .venv
 migrations/*
-
-.venv/
 venv/
 env/
 ENV/
 
+
+
+.env
