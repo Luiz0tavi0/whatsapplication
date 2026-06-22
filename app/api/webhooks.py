@@ -3,23 +3,15 @@ import secrets
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.db import get_session
+from app.dependencies import T_StatusService
 from app.providers.status_mapping import normalize_status
 from app.schemas.common import ErrorResponse, StatusResponse
 from app.schemas.webhooks import WireWebStatusPayload, ZApiStatusPayload
-from app.services.status_service import StatusService
 
 w_router = APIRouter(prefix='/webhooks', tags=['webhooks'])
 logger = logging.getLogger(__name__)
-
-
-def get_status_service(
-    session: AsyncSession = Depends(get_session),
-) -> StatusService:
-    return StatusService(session)
 
 
 def verify_zapi_token(token: str = Query(...)) -> None:
@@ -51,7 +43,7 @@ def verify_wireweb_session(
 )
 async def zapi_status_message_webhook(
     payload: ZApiStatusPayload,
-    service: StatusService = Depends(get_status_service),
+    service: T_StatusService,
 ):
     status = normalize_status('zapi', payload.status)
     if status is None:
@@ -73,7 +65,7 @@ async def zapi_status_message_webhook(
 )
 async def wireweb_status_message_webhook(
     payload: WireWebStatusPayload,
-    service: StatusService = Depends(get_status_service),
+    service: T_StatusService,
 ):
     status = normalize_status('wireweb', payload.event)
     if status is None:

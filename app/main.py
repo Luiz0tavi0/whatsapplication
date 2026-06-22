@@ -26,7 +26,7 @@ async def get_contacts(limit: int = 3) -> list[Contact]:
 async def dispatch_one(
     session, dispatcher: ProviderDispatcher, contact: Contact
 ) -> None:
-    message = f'Olá, {contact.name} tudo bem com você?'
+    message = f'Olá, {contact.name.strip()} tudo bem com você?'
     key = str(uuid.uuid4())
     msg_hash = hashlib.sha256(message.encode()).hexdigest()
 

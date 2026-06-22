@@ -13,16 +13,10 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "pytest",
-    "pytest-cov",
     "taskipy",
     "ruff",
     "alembic>=1.17.2",
     "ipdb",
-    "factory-boy>=3.3.3",
-    "freezegun>=1.5.5",
-    "testcontainers[postgres]",
-    "pytest-asyncio>=1.3.0",
 ]
 
 
@@ -38,14 +32,9 @@ select = ['I', 'F', 'E', 'W', 'PL', 'PT']
 preview = true
 quote-style = 'single'
 
-[tool.coverage.run]
-omit=['whatsapplication/settings.py',]
-
 [tool.taskipy.tasks]
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
 run = 'fastapi dev server.py'
-pre_test = 'task lint'
-test = 'pytest -s -x --cov=whatsapplication -vv'
-post_test = 'coverage html'
+
