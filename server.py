@@ -17,7 +17,7 @@ async def lifespan(app: FastAPI):
     http_client = None
 
 
-app = FastAPI(title='WA Status Receiver', lifespan=lifespan)
+app = FastAPI(title='Wa Application', lifespan=lifespan)
 
 
 app.include_router(w_router)
