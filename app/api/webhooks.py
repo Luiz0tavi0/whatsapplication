@@ -2,10 +2,10 @@ import logging
 import secrets
 from http import HTTPStatus
 
-from config import settings
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.db import get_session
 from app.providers.status_mapping import normalize_status
 from app.services.status_service import StatusService

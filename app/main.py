@@ -26,7 +26,7 @@ async def get_contacts(limit: int = 3) -> list[Contact]:
 async def dispatch_one(
     session, dispatcher: ProviderDispatcher, contact: Contact
 ) -> None:
-    message = f'Olá, {contact.nome} tudo bem com você?'
+    message = f'Olá, {contact.name} tudo bem com você?'
     key = str(uuid.uuid4())
     msg_hash = hashlib.sha256(message.encode()).hexdigest()
 
@@ -34,7 +34,8 @@ async def dispatch_one(
         idempotency_key=key,
         message_hash=msg_hash,
         provider='pending',
-        phone=contact.telefone,
+        provider_message_id=None,
+        phone=contact.phone,
         lid=contact.lid,
         status='pending',
     )
@@ -43,12 +44,12 @@ async def dispatch_one(
         await session.flush()
     except IntegrityError:
         await session.rollback()
-        logger.info('Idempotency key duplicada, pulando: %s', key)
+        logger.info(f'Idempotency key duplicada, pulando: {key}')
         return
 
     try:
         provider_name, message_id = await dispatcher.send_text(
-            contact.telefone, contact.lid, message
+            contact.phone, contact.lid, message
         )
         dispatch.provider = provider_name
         dispatch.provider_message_id = message_id
@@ -56,12 +57,12 @@ async def dispatch_one(
         logger.info(
             'Enviado via %s para %s (id=%s)',
             provider_name,
-            contact.telefone,
+            contact.phone,
             message_id,
         )
     except RuntimeError as e:
         dispatch.status = 'failed'
-        logger.error('Falha total ao enviar para %s: %s', contact.telefone, e)
+        logger.error('Falha total ao enviar para %s: %s', contact.phone, e)
 
     await session.commit()
 
