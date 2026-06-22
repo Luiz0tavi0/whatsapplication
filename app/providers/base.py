@@ -27,6 +27,7 @@ def _retryable(exc: BaseException) -> bool:
 class WhatsAppProvider(ABC):
     name: str
     supports_lid: bool = False
+    base_ur: str = ''
 
     @abstractmethod
     async def _send_text(self, recipient: str, message: str) -> str: ...

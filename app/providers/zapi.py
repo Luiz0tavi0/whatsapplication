@@ -7,11 +7,12 @@ from app.providers.base import WhatsAppProvider
 class ZApiProvider(WhatsAppProvider):
     name = 'zapi'
     supports_lid = True
+    base_url = settings.zapi_base_url
 
     def __init__(self, client: httpx.AsyncClient):
         self.client = client
         self.url = (
-            f'https://api.z-api.io/instances/{settings.zapi_instance}'
+            f'{self.base_url}instances/{settings.zapi_instance}'
             f'/token/{settings.zapi_token}/send-text'
         )
         self.headers = (

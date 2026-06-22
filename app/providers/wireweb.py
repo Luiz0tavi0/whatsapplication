@@ -7,10 +7,11 @@ from app.providers.base import WhatsAppProvider
 class WireWebProvider(WhatsAppProvider):
     name = "wireweb"
     supports_lid = False
+    base_url = settings.wireweb_base_url
 
     def __init__(self, client: httpx.AsyncClient):
         self.client = client
-        self.url = f"{settings.wireweb_base_url}/api/v1/messages"
+        self.url = f"{self.base_url}/api/v1/messages"
         self.headers = {"Authorization": f"Bearer {settings.wireweb_api_key}"}
 
     async def _send_text(self, recipient: str, message: str) -> str:
