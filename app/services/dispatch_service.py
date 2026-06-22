@@ -1,9 +1,9 @@
 import hashlib
+import logging
 import uuid
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-import logging
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.dispatch import Dispatch
 from app.providers.dispatcher import ProviderDispatcher
@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 class DispatchService:
     def __init__(self, session: AsyncSession, provider_dispatcher: ProviderDispatcher):
-        self.session=session
-        self.dispatcher=provider_dispatcher
+        self.session = session
+        self.dispatcher = provider_dispatcher
 
     async def send_to_contact(self, phone: str, lid: str | None, nome: str) -> Dispatch | None:
         message = f"Olá, {nome} tudo bem com você?"
