@@ -11,7 +11,7 @@ TERMINAL_FAILURE = "failed"
 def is_valid_transition(current: str, new: str) -> bool:
     if new == TERMINAL_FAILURE:
         # só falha se ainda não confirmou entrega/leitura
-        return current not in ("received", "read")
+        return current not in {"received", "read"}
 
     if current == TERMINAL_FAILURE:
         # depois de failed, não aceita reabrir pra sent/received/read
