@@ -11,18 +11,19 @@ class Settings(BaseSettings):
 
     database_url: str
 
-    zapi_instance: str
-    zapi_base_url: str
-    zapi_token: str
-    zapi_client_token: str | None = None
+    # zapi_instance: str
+    # zapi_base_url: str
+    # zapi_token: str
+    # zapi_client_token: str | None = None
 
     wireweb_base_url: str
     wireweb_api_key: str
     wireweb_session_id: str
 
-    zapi_webhook_token: str
+    # zapi_webhook_token: str
     wireweb_webhook_token: str
-    providers_order: list[str] = ['zapi', 'wireweb']
+    providers_order: list[str] = ['wireweb']
+    # providers_order: list[str] = ['zapi', 'wireweb']
 
 
 settings = Settings()  # type: ignore
