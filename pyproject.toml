@@ -45,7 +45,7 @@ omit=['whatsapplication/settings.py',]
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
-run = 'fastapi dev whatsapplication/app.py'
+run = 'fastapi dev whatsapplication/server.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=whatsapplication -vv'
 post_test = 'coverage html'
