@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.db import get_session
 from app.providers.status_mapping import normalize_status
+from app.schemas.webhooks import WireWebStatusPayload, ZApiStatusPayload
 from app.services.status_service import StatusService
 
 w_router = APIRouter(prefix='/webhooks', tags=['webhooks'])
@@ -40,12 +41,13 @@ def verify_wireweb_session(
 
 @w_router.post('/zapi/status', dependencies=[Depends(verify_zapi_token)])
 async def zapi_status_message_webhook(
-    payload: dict, service: StatusService = Depends(get_status_service)
+    payload: ZApiStatusPayload,
+    service: StatusService = Depends(get_status_service),
 ):
-    status = normalize_status('zapi', payload['status'])
+    status = normalize_status('zapi', payload.status)
     if status is None:
         return {'status': 'ignored'}
-    await service.update_status('zapi', payload['messageId'], status)
+    await service.update_status('zapi', payload.messageId, status)
     return {'status': 'ok'}
 
 
@@ -53,11 +55,12 @@ async def zapi_status_message_webhook(
     '/wireweb/status', dependencies=[Depends(verify_wireweb_session)]
 )
 async def wireweb_status_message_webhook(
-    payload: dict, service: StatusService = Depends(get_status_service)
+    payload: WireWebStatusPayload,
+    service: StatusService = Depends(get_status_service),
 ):
-    status = normalize_status('wireweb', payload['event'])
+    status = normalize_status('wireweb', payload.event)
     if status is None:
-        logger.warning('Evento wireweb desconhecido: %s', payload['event'])
+        logger.warning('Evento wireweb desconhecido: %s', payload.event)
         return {'status': 'ignored'}
-    await service.update_status('wireweb', payload['messageId'], status)
+    await service.update_status('wireweb', payload.messageId, status)
     return {'status': 'ok'}
