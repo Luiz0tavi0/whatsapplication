@@ -48,9 +48,9 @@ async def zapi_status_message_webhook(
     payload: ZApiStatusPayload,
     service: T_StatusService,
 ):
-    status = 'FAILED'
+    status = 'failed'
     if payload.type and payload.type == 'DeliveryCallback':
-        return StatusResponse(status='ignored')
+        status = 'PENDING'
     if payload.type and payload.type == 'MessageStatusCallback':
         if payload.status:
             status = normalize_status('zapi', payload.status)

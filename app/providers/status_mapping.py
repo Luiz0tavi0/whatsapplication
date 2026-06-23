@@ -1,4 +1,10 @@
-ZAPI_STATUS_MAP = {'SENT': 'sent', 'RECEIVED': 'received', 'READ': 'read'}
+ZAPI_STATUS_MAP = {
+    'PENDING': 'pending',
+    'SENT': 'sent',
+    'RECEIVED': 'received',
+    'READ': 'read',
+    'FAILED': 'failed',
+}
 
 WIREWEB_STATUS_MAP = {
     'message.sent': 'sent',
