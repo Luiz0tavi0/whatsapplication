@@ -1,51 +1,74 @@
-# WA Notifier
+# wa-notifier
 
-Lê contatos do Supabase e envia mensagem personalizada via WhatsApp, com fallback automático entre provedores (Z-API → WireWeb).
+Lê contatos do Supabase e envia `"Olá, <nome> tudo bem com você?"` via WhatsApp, com fallback automático (Z-API → WireWeb).
 
-## Setup da tabela (Supabase)
+## Setup da tabela
 
-```sql
-create table contacts (
+``create table contacts (
     id bigint generated always as identity primary key,
-    nome text not null,
-    telefone text not null,
-    lid text
+    name text not null,
+    phone text not null,
+    lid text unique,
+    created_at timestamptz default now() not null,
+    updated_at timestamptz default now() not null,
+    unique (phone, lid)
 );
-```
 
-`telefone` no formato DDI+DDD+número, ex: `5511999999999`.
-`lid` é opcional, preenchido depois (usado só pela Z-API quando disponível).
+create table dispatches (
+    id bigint generated always as identity primary key,
+    idempotency_key text unique not null,
+    message_hash text not null,
+    provider text not null,
+    provider_message_id text,
+    phone text not null,
+    lid text,
+    status text not null check (status in ('pending','sent','received','read','failed')),
+    created_at timestamptz default now() not null,
+    updated_at timestamptz default now() not null
+);
 
-Rodar migrations (cria também a tabela `dispatches`):
-
-```bash
-uv run alembic upgrade head
-```
+create index ix_dispatches_provider_message_id on dispatches (provider_message_id);
 
 ## Variáveis de ambiente
 
-Copie `.env.example` para `.env` e preencha:
+```bash
+cp .env.example .env
+```
 
-| Variável | Descrição |
-|---|---|
-| `DATABASE_URL` | connection string do Postgres (Supabase → Settings → Database, trocar `postgresql://` por `postgresql+asyncpg://`) |
-| `ZAPI_INSTANCE` / `ZAPI_TOKEN` / `ZAPI_CLIENT_TOKEN` | credenciais da Z-API |
-| `WIREWEB_BASE_URL` / `WIREWEB_API_KEY` / `WIREWEB_SESSION_ID` | credenciais do WireWeb (fallback) |
-| `PROVIDERS_ORDER` | ordem de tentativa, ex: `["zapi","wireweb"]` |
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `DATABASE_URL` | ✅ | Supabase → Settings → Database → **Transaction pooler** → trocar `postgresql://` por `postgresql+asyncpg://` |
+| `ZAPI_INSTANCE` | ✅ | ID da instância Z-API |
+| `ZAPI_BASE_URL` | ✅ | `https://api.z-api.io/` |
+| `ZAPI_TOKEN` | ✅ | Token da instância Z-API |
+| `WIREWEB_BASE_URL` | ⬜ | Ex: `https://api.wireweb.co.in` |
+| `WIREWEB_API_KEY` | ⬜ | Chave de API WireWeb |
+| `WIREWEB_SESSION_ID` | ⬜ | ID da sessão WireWeb |
+| `WIREWEB_WEBHOOK_TOKEN` | ⬜ | Token secreto para validar webhooks WireWeb |
+| `PROVIDERS_ORDER` | ⬜ | Default: `["zapi","wireweb"]` |
+
+> `DATABASE_URL` deve usar o **Transaction pooler** (porta `6543`) — a conexão direta do Supabase é IPv6-only.
 
 ## Como rodar
 
 ```bash
 uv sync
-cp .env.example .env   # preencher
 uv run alembic upgrade head
 uv run python -m app.main
 ```
 
-Envia "Olá, `<nome>` tudo bem com você?" para até 3 contatos cadastrados. Se o Z-API falhar, tenta automaticamente o WireWeb.
+Envia para até 3 contatos. Tenta Z-API primeiro; em falha aplica retry com backoff e cai para WireWeb.
 
-## Dev
+## Webhooks de status (opcional)
 
 ```bash
-uv run ruff check .
+uv run fastapi dev server.py
+ngrok http 8000
 ```
+
+| Provedor | URL |
+|---|---|
+| Z-API | `https://<ngrok>/webhooks/zapi/status?token=<ZAPI_TOKEN>` |
+| WireWeb | `https://<ngrok>/webhooks/wireweb/status?token=<WIREWEB_WEBHOOK_TOKEN>` |
+
+Status evolui via webhook: `pending` → `sent` → `received` → `read` / `failed`.
