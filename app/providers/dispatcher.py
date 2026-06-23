@@ -2,6 +2,7 @@ import logging
 
 import httpx
 
+# import ipdb
 from app.config import settings
 from app.providers.base import WhatsAppProvider
 from app.providers.wireweb import WireWebProvider
@@ -32,10 +33,11 @@ class ProviderDispatcher:
         last_error: Exception | None = None
         for provider in self.providers:
             try:
+                # ipdb.set_trace()
                 message_id = await provider.send_text(phone, lid, message)
                 return provider.name, message_id
             except Exception as e:
-                logger.warning('Falha no provider %s: %s', provider.name, e)
+                logger.warning(f'Falha no provider {provider.name}: {e}')
                 last_error = e
         raise RuntimeError(
             f'Todos os providers falharam. Último erro: {last_error}'

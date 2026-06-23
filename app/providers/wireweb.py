@@ -7,7 +7,7 @@ from app.providers.base import WhatsAppProvider
 class WireWebProvider(WhatsAppProvider):
     name = 'wireweb'
     supports_lid = False
-    base_url = settings.WIREWEB_BASE_URL
+    base_url = settings.WIREWEB_BASE_URL or ''
 
     def __init__(self, client: httpx.AsyncClient):
         self.client = client
