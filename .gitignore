@@ -8,7 +8,6 @@ wheels/
 
 # Virtual environments
 .venv
-migrations/*
 venv/
 env/
 ENV/
