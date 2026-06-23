@@ -3,8 +3,8 @@
 Lê contatos do Supabase e envia `"Olá, <nome> tudo bem com você?"` via WhatsApp, com fallback automático (Z-API → WireWeb).
 
 ## Setup da tabela
-
-```create table contacts (
+```sql
+create table contacts (
     id bigint generated always as identity primary key,
     name text not null,
     phone text not null,
