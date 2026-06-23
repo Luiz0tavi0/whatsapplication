@@ -4,7 +4,7 @@ Lê contatos do Supabase e envia `"Olá, <nome> tudo bem com você?"` via WhatsA
 
 ## Setup da tabela
 
-``create table contacts (
+```create table contacts (
     id bigint generated always as identity primary key,
     name text not null,
     phone text not null,
@@ -28,7 +28,7 @@ create table dispatches (
 );
 
 create index ix_dispatches_provider_message_id on dispatches (provider_message_id);
-
+```
 ## Variáveis de ambiente
 
 ```bash
