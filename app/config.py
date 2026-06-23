@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,21 +11,16 @@ class Settings(BaseSettings):
         extra='ignore',
     )
 
-    database_url: str
+    DATABASE_URL: str
 
-    # zapi_instance: str
-    # zapi_base_url: str
-    # zapi_token: str
-    # zapi_client_token: str | None = None
-
-    wireweb_base_url: str
-    wireweb_api_key: str
-    wireweb_session_id: str
-
-    # zapi_webhook_token: str
-    wireweb_webhook_token: str
-    providers_order: list[str] = ['wireweb']
-    # providers_order: list[str] = ['zapi', 'wireweb']
+    ZAPI_INSTANCE: str
+    ZAPI_BASE_URL: str
+    ZAPI_TOKEN: str
+    WIREWEB_BASE_URL: Optional[str] = None
+    WIREWEB_API_KEY: Optional[str] = None
+    WIREWEB_SESSION_ID: Optional[str] = None
+    WIREWEB_WEBHOOK_TOKEN: Optional[str] = None
+    PROVIDERS_ORDER: tuple[str, ...] = ('zapi', 'wireweb')
 
 
 settings = Settings()  # type: ignore

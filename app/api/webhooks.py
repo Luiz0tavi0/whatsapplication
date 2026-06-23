@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def verify_zapi_token(token: str = Query(...)) -> None:
-    if not secrets.compare_digest(token, settings.zapi_webhook_token):
+    if not secrets.compare_digest(token, settings.ZAPI_TOKEN):
         raise HTTPException(HTTPStatus.UNAUTHORIZED, 'invalid token')
 
 
@@ -23,11 +23,13 @@ def verify_wireweb_session(
     token: str = Query(...), x_wire_session_id: str = Header(...)
 ) -> None:
     # ipdb.set_trace()
-    if not secrets.compare_digest(token, settings.wireweb_webhook_token):
+    if settings.WIREWEB_WEBHOOK_TOKEN and not secrets.compare_digest(
+        token, settings.WIREWEB_WEBHOOK_TOKEN
+    ):
         raise HTTPException(HTTPStatus.UNAUTHORIZED, 'invalid token')
     # ipdb.set_trace()
-    if not secrets.compare_digest(
-        x_wire_session_id, settings.wireweb_session_id
+    if settings.WIREWEB_SESSION_ID and not secrets.compare_digest(
+        x_wire_session_id, settings.WIREWEB_SESSION_ID
     ):
         raise HTTPException(HTTPStatus.FORBIDDEN, 'unknown session')
 
