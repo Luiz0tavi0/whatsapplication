@@ -2,6 +2,7 @@ import logging
 import secrets
 from http import HTTPStatus
 
+# import ipdb
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 
 from app.config import settings
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def verify_zapi_token(token: str = Query(...)) -> None:
-    if not secrets.compare_digest(token, settings.ZAPI_TOKEN):
+    if not secrets.compare_digest(token, settings.ZAPI_WEBHOOK_TOKEN):
         raise HTTPException(HTTPStatus.UNAUTHORIZED, 'invalid token')
 
 
@@ -47,11 +48,21 @@ async def zapi_status_message_webhook(
     payload: ZApiStatusPayload,
     service: T_StatusService,
 ):
-    status = normalize_status('zapi', payload.status)
-    if status is None:
+    status = 'FAILED'
+    if payload.type and payload.type == 'DeliveryCallback':
         return StatusResponse(status='ignored')
+    if payload.type and payload.type == 'MessageStatusCallback':
+        if payload.status:
+            status = normalize_status('zapi', payload.status)
+            if status is None:
+                return StatusResponse(status='ignored')
 
-    await service.update_status('zapi', payload.messageId, status)
+    message_ids = payload.ids or (
+        [payload.messageId] if payload.messageId else []
+    )
+    # ipdb.set_trace()
+    for mid in message_ids:
+        await service.update_status('zapi', mid, status, lid=payload.phone)
     return StatusResponse(status='ok')
 
 
@@ -69,9 +80,11 @@ async def wireweb_status_message_webhook(
     payload: WireWebStatusPayload,
     service: T_StatusService,
 ):
+    # o wireweb apenas envia pro webhook mensagens recebidas
     status = normalize_status('wireweb', payload.event)
     if status is None:
         logger.warning('Evento wireweb desconhecido: %s', payload.event)
         return StatusResponse(status='ignored')
+    # wireweb não retorna @lid pra atualizar
     await service.update_status('wireweb', payload.messageId, status)
     return StatusResponse(status='ok')

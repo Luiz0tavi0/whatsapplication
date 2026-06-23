@@ -9,6 +9,7 @@ TERMINAL_FAILURE = "failed"
 
 
 def is_valid_transition(current: str, new: str) -> bool:
+    """Garante que nenhuma transição pode regredir o estado."""
     if new == TERMINAL_FAILURE:
         # só falha se ainda não confirmou entrega/leitura
         return current not in {"received", "read"}

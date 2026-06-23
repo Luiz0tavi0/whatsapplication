@@ -15,7 +15,7 @@ PROVIDER_REGISTRY = {'zapi': ZApiProvider, 'wireweb': WireWebProvider}
 def build_providers(client: httpx.AsyncClient) -> list[WhatsAppProvider]:
     return [
         PROVIDER_REGISTRY[name](client)
-        for name in settings.providers_order
+        for name in settings.PROVIDERS_ORDER
         if name in PROVIDER_REGISTRY
     ]
 

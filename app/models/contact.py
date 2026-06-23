@@ -1,5 +1,9 @@
-from sqlalchemy import BigInteger, String
-from sqlalchemy.orm import Mapped, mapped_as_dataclass, mapped_column
+from sqlalchemy import BigInteger, String, UniqueConstraint
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_as_dataclass,
+    mapped_column,
+)
 
 from app.models import table_registry
 from app.models.mixins import DateMixin
@@ -14,4 +18,7 @@ class Contact(DateMixin):
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
     phone: Mapped[str] = mapped_column(String, nullable=False)
-    lid: Mapped[str | None] = mapped_column(String, nullable=True)
+    lid: Mapped[str | None] = mapped_column(String, nullable=True, unique=True)
+    __table_args__ = (
+       UniqueConstraint('phone', 'lid', name='uq_contact_phone_lid'),
+)

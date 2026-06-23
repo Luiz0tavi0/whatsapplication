@@ -1,4 +1,3 @@
-
 import httpx
 
 from app.config import settings
@@ -14,11 +13,11 @@ class ZApiProvider(WhatsAppProvider):
         self.client = client
         self.url = (
             f'{self.base_url}instances/{settings.ZAPI_INSTANCE}'
-            f'/token/{settings.zapi_token}/send-text'
+            f'/token/{settings.ZAPI_TOKEN}/send-text'
         )
         self.headers = (
-            {'Client-Token': settings.ZAPI_CLIENT_TOKEN}
-            if settings.ZAPI_CLIENT_TOKEN
+            {'Client-Token': settings.ZAPI_TOKEN}
+            if settings.ZAPI_TOKEN
             else {}
         )
 

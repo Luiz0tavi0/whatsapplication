@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     ZAPI_INSTANCE: str
     ZAPI_BASE_URL: str
     ZAPI_TOKEN: str
+    ZAPI_WEBHOOK_TOKEN: str
     WIREWEB_BASE_URL: Optional[str] = None
     WIREWEB_API_KEY: Optional[str] = None
     WIREWEB_SESSION_ID: Optional[str] = None

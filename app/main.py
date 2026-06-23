@@ -55,10 +55,8 @@ async def dispatch_one(
         dispatch.provider_message_id = message_id
         dispatch.status = 'sent'
         logger.info(
-            'Enviado via %s para %s (id=%s)',
-            provider_name,
-            contact.phone,
-            message_id,
+            f'Enviado via {provider_name} para '
+            f'{contact.phone} (id={message_id})'
         )
     except RuntimeError as e:
         dispatch.status = 'failed'
