@@ -38,5 +38,5 @@ quote-style = 'single'
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
-run = 'fastapi dev server.py'
+run = 'fastapi dev app/server.py'
 
