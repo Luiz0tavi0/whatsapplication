@@ -19,6 +19,7 @@ dev = [
     "ipdb",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
+    "aiosqlite>=0.22.1",
 ]
 
 
@@ -39,4 +40,10 @@ lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
 run = 'fastapi dev app/server.py'
+pre_test='task lint'
+test = 'pytest -s -x -vv'
 
+[tool.pytest.ini_options]
+pythonpath=["."]
+asyncio_mode='auto'
+filterwarnings = ["ignore::sqlalchemy.exc.SADeprecationWarning"]
