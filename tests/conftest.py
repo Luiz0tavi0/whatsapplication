@@ -1,6 +1,7 @@
 from typing import Any, AsyncGenerator
 
 import pytest
+import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import (
@@ -9,8 +10,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.db import get_session
 from app.models import table_registry
-from app.server import app
+from app.server import app as fastapi_app  # noqa: E402
 
 
 @pytest.fixture
@@ -43,7 +45,17 @@ async def session(engine):
 
 @pytest.fixture
 async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, Any]:
+    async def override_get_session():
+        yield session
+
+    fastapi_app.dependency_overrides[get_session] = override_get_session
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url='http://test'
+        transport=ASGITransport(app=fastapi_app), base_url='http://test'
     ) as ac:
         yield ac
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def clear_overrides():
+    yield
+    fastapi_app.dependency_overrides.clear()
