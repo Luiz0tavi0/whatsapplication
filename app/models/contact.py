@@ -14,7 +14,7 @@ class Contact(DateMixin):
     __tablename__ = 'contacts'
 
     id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, autoincrement=True
+        BigInteger, primary_key=True, autoincrement=True, init=False
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
     phone: Mapped[str] = mapped_column(String, nullable=False)
