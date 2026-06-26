@@ -5,11 +5,7 @@ description = "Aplicação de envio de mensagens via whastapp+z-api com fallback
 readme = "README.md"
 requires-python = ">=3.13.3,<4.0.0"
 authors = [{ name = "luiz_loon", email = "luiz_loon@yahoo.com.br" }]
-dependencies = [
-    "asyncpg>=0.31.0",
-    "fastapi[standard]",
-    "tenacity>=9.1.4",
-]
+dependencies = ["asyncpg>=0.31.0", "fastapi[standard]", "tenacity>=9.1.4"]
 
 [dependency-groups]
 dev = [
@@ -17,6 +13,10 @@ dev = [
     "ruff",
     "alembic>=1.17.2",
     "ipdb",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "aiosqlite>=0.22.1",
+    "testcontainers[postgres]>=4.14.2",
 ]
 
 
@@ -36,5 +36,11 @@ quote-style = 'single'
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
-run = 'fastapi dev server.py'
+run = 'fastapi dev app/server.py'
+pre_test = 'task lint'
+test = 'ENV_FILE=.env.test pytest -s -x -vv'
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = 'auto'
+filterwarnings = ["ignore::sqlalchemy.exc.SADeprecationWarning"]
