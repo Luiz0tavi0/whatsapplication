@@ -3,30 +3,40 @@ from typing import Any, AsyncGenerator
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import event
+from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
+from testcontainers.postgres import PostgresContainer
 
 from app.db import get_session
 from app.models import table_registry
 from app.server import app as fastapi_app  # noqa: E402
 
+# @pytest.fixture
+# def engine():
+#     _engine = create_async_engine(
 
-@pytest.fixture
+#         'sqlite+aiosqlite:///:memory:',
+#         connect_args={'check_same_thread': False},
+#     )
+
+#     @event.listens_for(_engine.sync_engine, 'connect')
+#     def set_sqlite_pragma(conn, _):
+#         conn.execute('PRAGMA foreign_keys=ON')
+
+#     return _engine
+
+
+@pytest.fixture(scope='session')
 def engine():
-    _engine = create_async_engine(
-        'sqlite+aiosqlite:///:memory:',
-        connect_args={'check_same_thread': False},
-    )
-
-    @event.listens_for(_engine.sync_engine, 'connect')
-    def set_sqlite_pragma(conn, _):
-        conn.execute('PRAGMA foreign_keys=ON')
-
-    return _engine
+    with PostgresContainer('postgres:17', driver='asyncpg') as postgres:
+        _engine = create_async_engine(
+            postgres.get_connection_url(), poolclass=NullPool
+        )
+        yield _engine
 
 
 @pytest.fixture

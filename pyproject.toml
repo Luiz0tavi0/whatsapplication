@@ -16,6 +16,7 @@ dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "aiosqlite>=0.22.1",
+    "testcontainers[postgres]>=4.14.2",
 ]
 
 
